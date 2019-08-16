@@ -1,0 +1,58 @@
+# Convert accession numbers to taxonomy
+
+[![Build Status](https://travis-ci.org/sherrillmix/taxonomizr.svg?branch=master)](https://travis-ci.org/sherrillmix/taxonomizr)
+[![codecov](https://codecov.io/gh/sherrillmix/taxonomizr/branch/master/graph/badge.svg)](https://codecov.io/gh/sherrillmix/taxonomizr)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/taxonomizr)](https://cran.r-project.org/package=taxonomizr)
+
+## Introduction
+
+`antibodyr` provides some simple functions to read in measurements of antibody in serum and display.
+
+The major functions are:
+ * `readAnti`: read in antibody data
+ * `average`: convert accession numbers to taxonomic IDs
+ * `plotAnti`: plot the raw data from positive controls and patient serum
+ * `plotHeat`: convert taxonomic IDs to taxonomy
+
+More specialized functions are:
+ * `getId`: convert a biological name to taxonomic ID
+ * `getAccessions`: find accessions for a given taxonomic ID
+
+And a simple use case might look like (see below for more details):
+
+```{r,eval=FALSE}
+library(antibodyr)
+raw<-read.csv('antibodyData.csv',stringsAsFactors=FALSE,header=FALSE)
+stacked<-readAnti(raw,p24Cut=10)
+odMat<-convertStackedToMat(stacked)
+par(mar=c(6,10,1,3))
+plotHeat(odMat,main='',filterLess=200,filterMore=50000,scaleMain='Dilution reaching OD450(p24=10pg)')
+```
+
+## Installation
+The package is available from github, use the [<code>devtools</code>](https://github.com/hadley/devtools) library and run:
+```{r, eval=FALSE}
+devtools::install_github("sherrillmix/antibodyr")
+```
+
+To use the library, load it in R:
+```{r}
+library(antibodyr)
+```
+
+## Usage
+
+### Reading in data
+In most cases, the user will be reading in data from a .csv file (if an Excel file then Save As .csv in Excel or OpenOffice):
+
+```{r,eval=FALSE}
+raw<-read.csv('antibodyData.csv',stringsAsFactors=FALSE,header=FALSE)
+```
+
+Here we'll use data cached from the package:
+
+```{r}
+raw<-antibodyr::antibodyData
+```
+
+

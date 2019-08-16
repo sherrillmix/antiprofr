@@ -1,0 +1,7 @@
+^.git$
+^makefile$
+^.travis.yml$
+^README.Rmd$
+^README.html$
+^usage.template$
+^data-raw/*
