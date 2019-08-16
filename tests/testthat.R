@@ -1,3 +1,3 @@
 library(testthat)
 library(antiprofr)
-test_check("antir")
+test_check("antiprofr")

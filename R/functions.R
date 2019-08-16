@@ -1,28 +1,49 @@
-readAnti<-function(dat,p24Cut=25,patLineSkip=0){
-  patLines<-which(dat[,1]!='')
-  gaps<-c(which(dat[,2] %in% c('','BB')),nrow(dat)+1)
-  nrows<-sapply(patLines,function(xx)min(gaps[gaps>xx+2])-xx-1)-1
-  if(any(nrows!=nrows[1]))stop('Differing numbers of rows')
-  dilutions<-300*3^(0:3)
-  p24s<-240/3^(0:3)
+#' Read antibody profiling data
+#'
+#' Read in antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma
+#'
+#' @param dat a file containing the raw data or a data.frame containing raw data. The function assumes that the first column of the first row of each plate contains the patient ID and the remainder of that plate is empty.
+#' @param positiveThreshold a single numeric threshold to use for determining a threshold by estimating the OD for this amount of positive control antibody
+#' @param dilutions
+#' @return a data.frame
+#' @export
+#' @seealso \code{\link{calcP24Cut}}, \code{\link{calcCross}}, \code{\link{plotAnti}}
+#' @examples
+#' raw<-c(
+#'   "1\t|\tall\t|\t\t|\tsynonym\t|",
+#'   "1\t|\troot\t|\t\t|\tscientific name\t|",
+#'   "2\t|\tBacteria\t|\tBacteria <prokaryotes>\t|\tscientific name\t|",
+#'   "2\t|\tMonera\t|\tMonera <Bacteria>\t|\tin-part\t|",
+#'   "2\t|\tProcaryotae\t|\tProcaryotae <Bacteria>\t|\tin-part\t|"
+#' )
+#' tmpFile<-tempfile()
+#' writeLines(raw,tmpFile)
+# readAnti(tmpFile)
+# readAnti(raw)
+readAnti<-function(dat,positiveThreshold=25,dilutions=300*3^(0:3),p24Dilutions=240/3^(0:3),vocal=TRUE,nrows=8){
+  if(!is.data.frame(dat))dat<-utils::read.csv(dat,header=FALSE,stringsAsFactors=FALSE)
+  dat<-dat[dat[,2]!=''&!is.na(dat[,2]),]
+  if(nrow(dat)%%nrows!=0)stop('Found ',nrow(dat),' rows. Not evenly divided by nrows=',nrows)
+  patLines<-seq(1,nrow(dat),8)
+  if(vocal)message('Reading in ',length(patLines),' plates of ',nrows,' rows')
   stacked<-do.call(rbind,lapply(1:length(patLines),function(ii){
     xx<-patLines[ii]
     pat<-trimws(dat[xx,1])
-    noAnt<-unlist(dat[xx+patLineSkip,c(2+1:4)])
-    p24Ab<-unlist(dat[xx+patLineSkip,c(2+5:12)])
-    raws<-unlist(dat[xx+patLineSkip+1:7,2+1:12])
-    ants<-trimws(dat[xx+patLineSkip+1:7,2])
+    noAnt<-unlist(dat[xx,c(2+1:4)])
+    p24Ab<-unlist(dat[xx,c(2+5:12)])
+    raws<-unlist(dat[xx+1:7,2+1:12])
+    ants<-trimws(dat[xx+1:7,2])
     names(noAnt)<-dilutions
     out<-data.frame('pat'=pat,'antigen'=rep(ants,12),'dilution'=rep(rep(dilutions,3),each=7),'pos'=FALSE,'neg'=FALSE,'od'=raws,stringsAsFactors=FALSE)
     ns<-c(length(noAnt),length(p24Ab))
-    out<-rbind(out,data.frame('pat'=pat,'antigen'=rep(c('noAntigen','p24Control'),ns),'dilution'=c(dilutions,rep(p24s,2)),'pos'=rep(c(F,T),ns),'neg'=rep(c(T,F),ns),'od'=c(noAnt,p24Ab),stringsAsFactors=FALSE))
+    out<-rbind(out,data.frame('pat'=pat,'antigen'=rep(c('noAntigen','p24Control'),ns),'dilution'=c(dilutions,rep(p24Dilutions,2)),'pos'=rep(c(F,T),ns),'neg'=rep(c(T,F),ns),'od'=c(noAnt,p24Ab),stringsAsFactors=FALSE))
     out$plate<-ii
     out$noAnt<-noAnt[as.character(out$dilution)]
     out$sub<-out$od-out$noAnt
     return(out)
   }))
   p24<-stacked[stacked$pos,]
-  cuts<-calcP24Cut(p24$plate,p24$od,p24$dil,p24Cut=p24Cut)
+  cuts<-calcP24Cut(p24$plate,p24$od,p24$dil,positiveThreshold=positiveThreshold)
   stacked$cut<-cuts[as.character(stacked$plate)]
   xx<-stacked[!stacked$pos&!stacked$neg,]
   tmp<-paste(xx$antigen,xx$pat,xx$plate,sep='___')
@@ -30,12 +51,12 @@ readAnti<-function(dat,p24Cut=25,patLineSkip=0){
   stacked$cross[!stacked$pos&!stacked$neg]<-crosses[tmp]
   stacked
 }
-calcP24Cut<-function(plate,od,dil,p24Cut=25){
+calcP24Cut<-function(plate,od,dil,positiveThreshold=25){
   odDil<-data.frame('od'=od,'dil'=dil,'plate'=plate,'logDil'=log(dil))
   out<-sapply(unique(plate),function(ii){
     thisDat<-odDil[odDil$plate==ii,]
     fit<-stats::lm(I(log(od))~logDil,thisDat)
-    od25<-exp(stats::predict(fit,data.frame('logDil'=log(p24Cut))))
+    od25<-exp(stats::predict(fit,data.frame('logDil'=log(positiveThreshold))))
     return(od25)
   })
   names(out)<-unique(plate)
