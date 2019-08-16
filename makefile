@@ -31,6 +31,6 @@ README.md: README.Rmd R/*.R
 	make localInstall
 	R -e 'knitr::opts_chunk$$set(fig.path="README_files/");knitr::knit("README.Rmd")'
 	
-$(PACKAGEFILE): man R/*.R DESCRIPTION data/example.RData
+$(PACKAGEFILE): man R/*.R DESCRIPTION data/example.RData tests/testthat/*.R
 	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" DESCRIPTION
 	R -e 'devtools::check();devtools::build()'

@@ -1,9 +1,10 @@
-Package: antibodyr
+Package: antir
 Maintainer: Scott Sherrill-Mix <shescott@upenn.edu>
 License: GPL (>=2)
 Title: Functions to Work with measurements of antibody binding from serum
 Type: Package
 LazyLoad: yes
+LazyData: yes
 Author: Scott Sherrill-Mix [aut, cre]
 Authors@R: c(person("Scott", "Sherrill-Mix", role = c("aut", "cre"),
                      email = "shescott@upenn.edu"))
@@ -21,4 +22,3 @@ Imports:
   dnar
 Remotes:sherrillmix/dnar
 RoxygenNote: 6.1.1
-VignetteBuilder: knitr
