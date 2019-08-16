@@ -1,15 +1,15 @@
-Package: antir
+Package: antiprofr
 Maintainer: Scott Sherrill-Mix <shescott@upenn.edu>
 License: GPL (>=2)
-Title: Functions to Work with measurements of antibody binding from serum
+Title: Functions to Work with measurements of antibody profiling from serum
 Type: Package
 LazyLoad: yes
 LazyData: yes
 Author: Scott Sherrill-Mix [aut, cre]
 Authors@R: c(person("Scott", "Sherrill-Mix", role = c("aut", "cre"),
                      email = "shescott@upenn.edu"))
-BugReports: https://github.com/sherrillmix/taxonomizr/issues
-Description: Functions for assigning taxonomy to NCBI accession numbers and taxon IDs based on NCBI's accession2taxid and taxdump files. This package allows the user to downloads NCBI data dumps and create a local database for fast and local taxonomic assignment.
+BugReports: https://github.com/sherrillmix/antiprofr/issues
+Description: This package provides some simple functions to read in and display measurements of antibody profiling in serum.
 Version: 0.0.1
 Date: 2019-08-16
 Suggests:

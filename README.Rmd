@@ -6,10 +6,10 @@
 
 ## Introduction
 
-`antiR` provides some simple functions to read in measurements of antibody in serum and display.
+`antiprofr` provides some simple functions to read in and display measurements of antibody profiling in serum.
 
 The major functions are:
- * `readAnti`: read in antibody data
+ * `readAnti`: read in antibody profiling data
  * `convertStackedToMat`: average stacked data to a single value per patient-antigen
  * `plotAnti`: plot the raw data from positive controls and patient serum
  * `plotHeat`: plot the average patient-antigen values
@@ -37,6 +37,10 @@ library(antir)
 ```
 
 ## Usage
+
+### Data format
+
+This package is designed for antibody profiling data where each row given the OD for various dilutions of a patient serum with a given antigen (or positive or negative control). The data should be in a 15 column .csv where the first column gives the patient ID (blanks are filled down), the second column gives the antigen and columns 3-14 give OD values for given dilutions of the patient serum for that antigen.
 
 ### Reading in data
 In most cases, the user will be reading in data from a .csv file (if an Excel file then Save As .csv in Excel or OpenOffice):

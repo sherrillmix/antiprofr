@@ -149,6 +149,6 @@ plotHeat<-function(odMat,filterLess=min(odMat,na.rm=TRUE),scaleMain='Dilution re
 #'
 #' A dataset containing raw data read in from the .csv results from an example antibody experiment
 #'
-#' @format A data frame with 256 rows and 15 cols where the first column gives the patient ID (blanks are filled down), the second column gives the antigen and columns 3-14 give OD values from 96 well plates.
+#' @format A data frame with 256 rows and 14 cols where the first column gives the patient ID (blanks are filled down), the second column gives the antigen and columns 3-14 give OD values from 96 well plates.
 #' @source system.file("data-raw", "makeExample.R", package = "antir")
 "antibodyData"
