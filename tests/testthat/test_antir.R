@@ -19,4 +19,7 @@ test_that("Test read.anti",{
   expect_equal(readAnti(antibodyData),readAnti(tmp))
   tmp<-cbind(tmp,NA,NA,NA,NA)
   expect_equal(readAnti(antibodyData),readAnti(tmp))
+  expect_error(readAnti(antibodyData[1:14,]),'rows')
+  expect_error(readAnti(antibodyData[1:16,]),NA)
+  expect_error(readAnti(antibodyData[1:14,],nrow=7),NA)
 })
