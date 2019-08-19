@@ -20,7 +20,7 @@ And a simple use case might look like (see below for more details):
 
 
 ```r
-library(antir)
+library(antiprofr)
 raw<-read.csv('antibodyData.csv',stringsAsFactors=FALSE,header=FALSE)
 stacked<-readAnti(raw,p24Cut=10)
 odMat<-convertStackedToMat(stacked)
@@ -32,20 +32,20 @@ plotHeat(odMat,main='',filterLess=200,filterMore=50000,scaleMain='Dilution reach
 The package is available from github, use the [<code>devtools</code>](https://github.com/hadley/devtools) library and run:
 
 ```r
-devtools::install_github("sherrillmix/antir")
+devtools::install_github("sherrillmix/antiprofr")
 ```
 
 To use the library, load it in R:
 
 ```r
-library(antir)
+library(antiprofr)
 ```
 
 ## Usage
 
 ### Data format
 
-This package is designed for antibody profiling data where each row given the OD for various dilutions of a patient serum with a given antigen (or positive or negative control). The data should be in a 15 column .csv where the first column gives the patient ID (blanks are filled down), the second column gives the antigen and columns 3-14 give OD values for given dilutions of the patient serum for that antigen.
+This package is designed for antibody profiling data where each row given the OD for various dilutions of a patient serum with a given antigen (or positive or negative control). The data should be in a 15 column .csv where the first column gives the patient ID in the first row of each plate of data and is empty for remaining rows of that plate, the second column gives the antigen and columns 3-14 give OD values for given dilutions of the patient serum for that antigen.
 
 ### Reading in data
 In most cases, the user will be reading in data from a .csv file (if an Excel file then Save As .csv in Excel or OpenOffice):

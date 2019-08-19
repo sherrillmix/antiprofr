@@ -19,15 +19,13 @@ a data.frame
 Read in antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma
 }
 \examples{
-raw<-c(
-  "1\\t|\\tall\\t|\\t\\t|\\tsynonym\\t|",
-  "1\\t|\\troot\\t|\\t\\t|\\tscientific name\\t|",
-  "2\\t|\\tBacteria\\t|\\tBacteria <prokaryotes>\\t|\\tscientific name\\t|",
-  "2\\t|\\tMonera\\t|\\tMonera <Bacteria>\\t|\\tin-part\\t|",
-  "2\\t|\\tProcaryotae\\t|\\tProcaryotae <Bacteria>\\t|\\tin-part\\t|"
-)
+fakeDat<-1:8 \%*\% t(1/3^rep(0:3,3))
+fakeDat[1,]<-c(rep(0.1,4),50*1/3^rep(0:3,2))
+raw<-cbind(data.frame('pat'='Test',antigen=LETTERS[1:8]),fakeDat)
 tmpFile<-tempfile()
-writeLines(raw,tmpFile)
+write.table(raw,tmpFile,row.names=FALSE,col.names=FALSE,sep=',')
+readAnti(tmpFile)
+readAnti(raw)
 }
 \seealso{
 \code{\link{calcP24Cut}}, \code{\link{calcCross}}, \code{\link{plotAnti}}
