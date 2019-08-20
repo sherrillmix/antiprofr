@@ -11,7 +11,7 @@ Authors@R: c(person("Scott", "Sherrill-Mix", role = c("aut", "cre"),
 BugReports: https://github.com/sherrillmix/antiprofr/issues
 Description: This package provides some simple functions to read in and display measurements of antibody profiling in serum.
 Version: 0.0.1
-Date: 2019-08-19
+Date: 2019-08-20
 Suggests:
     testthat,
     knitr,

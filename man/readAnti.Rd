@@ -13,10 +13,21 @@ readAnti(dat, positiveThreshold = 25, dilutions = 300 * 3^(0:3),
 \item{positiveThreshold}{a single numeric threshold to use for determining a threshold by estimating the OD for this amount of positive control antibody}
 }
 \value{
-a data.frame
+a data.frame with a row for each well in the raw plate data with columns:
+\itemize{
+ \item pat The patient identifier from the first column of the raw plate data
+ \item antigen The antigen identifier from the second column of the raw plate data
+ \item dilution The serum dilution for the given well
+ \item pos TRUE if the well was a positive control. Otherwise FALSE
+ \item neg TRUE if the well was a negative control. Otherwise FALSE
+ \item od The raw OD value read from the plate data
+ \item plate The plate number for a well. Plates are numbered starting from 1 for the topmost plate.
+ \item noAnt The OD value for the negative control well corresponding to this serum dilution
+ \item sub The raw value with the negative control mean subtracted
+}
 }
 \description{
-Read in antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma
+Read in antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma. Negative control data is assumed to be in the first 4 columns of the first row of data for each plate. The mean of the negative contol is subtracted from all values in the \code{sub} column of the output.. Positive control data with a known antibody is assumed to be in columns 5-8 and 9-12 of the first row.
 }
 \examples{
 fakeDat<-1:8 \%*\% t(1/3^rep(0:3,3))
