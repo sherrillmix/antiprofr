@@ -80,7 +80,18 @@ calcCross<-function(od,dil,odCut=25){
   if(fit$coef['dil']>0)return(0)
   exp(-(fit$coef['(Intercept)']-log(odCut))/fit$coef['dil'])
 }
-plotAnti<-function(stacked,p24Cut=25,plotBoth=TRUE,lab='Dilution(OD450=p24 25pg)'){
+#' Plot antibody profiling data
+#'
+#' Plot antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma.
+#'
+#' @param stacked output from readAnti storing antibody profiling data
+#' @param positiveThreshold a single numeric threshold to use for determining a threshold by estimating the OD for this amount of positive control antibody
+#' @param lab a string giving the label for the color scale
+#' @export
+#' @seealso \code{\link{plotAnti}}
+#' @examples
+#' 1
+plotAnti<-function(stacked,positiveThreshold=25,lab='Dilution(OD450=p24 25pg)'){
   ylim<-range(stacked$od)
   p24<-stacked[stacked$pos,]
   p24<-p24[order(p24$plate,p24$dilution),]
@@ -97,12 +108,12 @@ plotAnti<-function(stacked,p24Cut=25,plotBoth=TRUE,lab='Dilution(OD450=p24 25pg)
     fit<-stats::lm(I(log(od))~logDil,thisDat)
     fakeDat<-data.frame('logDil'=seq(1e-2,10,.01))
     pred<-stats::predict(fit,fakeDat)
-    od25<-exp(stats::predict(fit,data.frame('logDil'=log(p24Cut))))
-    graphics::abline(v=p24Cut,h=od25,lty=2)
+    od25<-exp(stats::predict(fit,data.frame('logDil'=log(positiveThreshold))))
+    graphics::abline(v=positiveThreshold,h=od25,lty=2)
     graphics::lines(exp(fakeDat$logDil),exp(pred))
   }
   for(ii in unique(stacked$antigen[!stacked$antigen %in% c('noAntigen','p24Control')])){
-    graphics::par(mfrow=c(ceiling(length(unique(stacked$pat))/ifelse(plotBoth,1,2)),2),mar=c(4.5,4,2.5,.4))
+    graphics::par(mfrow=c(ceiling(length(unique(stacked$pat))/2),2),mar=c(4.5,4,2.5,.4))
     for(jj in unique(stacked$pat[stacked$antigen==ii])){
       thisDat<-stacked[stacked$pat==jj&stacked$antigen==ii,]
       thisPlate<-unique(stacked[stacked$pat==jj&stacked$antigen==ii,'plate'])
@@ -111,10 +122,6 @@ plotAnti<-function(stacked,p24Cut=25,plotBoth=TRUE,lab='Dilution(OD450=p24 25pg)
       thisDat$sub<-thisDat$od-neg[as.character(thisDat$dilution)]
       subMean<-tapply(thisDat$sub,thisDat[,c('dilution')],stats::median)
       above5<-stats::approx(subMean,log10(as.numeric(names(subMean))),thisDat$cut[1])$y
-      if(plotBoth){
-        graphics::plot(1/thisDat$dil,thisDat$od,main=sprintf('%s %s',ii,jj),xlab='Plasma Dilution',log='x',ylab='OD450',las=1,xaxt='n',ylim=ylim,mgp=c(2.5,.7,0))
-        dnar::logAxis(1,axisMin=1e-4)
-      }
       graphics::plot(1/thisDat$dil,ifelse(thisDat$sub<.01,.01,thisDat$sub),main=sprintf('%s %s\n %s=%0.0f',ii,jj,lab,thisDat$cross[1]),xlab='Plasma Dilution',log='xy',ylab='OD450 (-negative)',las=1,xaxt='n',ylim=c(.01,ylim[2]),mgp=c(2.5,.7,0),cex=2)
       dnar::logAxis(1,axisMin=1e-4)
       graphics::lines(1/as.numeric(names(subMean)),subMean,lty=3)
