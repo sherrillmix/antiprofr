@@ -4,10 +4,10 @@
 #'
 #' @param dat a file containing the raw data or a data.frame containing raw data. The function assumes that the first column of the first row of each plate contains the patient ID and the remainder of that plate is empty.
 #' @param positiveThreshold a single numeric threshold to use for determining a threshold by estimating the OD for this amount of positive control antibody
-#' @param dilutions
-#' @param p24Dilutions
-#' @param vocal
-#' @param nrows
+#' @param dilutions a vector giving dilutions for the serum sample as fold dilution e.g. 2 ul added to 298 ul would be 150.
+#' @param positiveDilutions a vector giving dilutions for the positive control as fold dilution e.g. 2 ul added to 298 ul would be 150.
+#' @param vocal If TRUE output informational messages
+#' @param nrows number of rows in each group of data/plate
 #' @return a data.frame with a row for each well in the raw plate data with columns:
 #' \itemize{
 #'  \item pat The patient identifier from the first column of the raw plate data
@@ -21,7 +21,7 @@
 #'  \item sub The raw value with the negative control mean subtracted
 #' }
 #' @export
-#' @seealso \code{\link{calcP24Cut}}, \code{\link{calcCross}}, \code{\link{plotAnti}}
+# @seealso \code{\link{calcP24Cut}}, \code{\link{calcCross}}, \code{\link{plotAnti}}
 #' @examples
 #' fakeDat<-1:8 %*% t(1/3^rep(0:3,3))
 #' fakeDat[1,]<-c(rep(0.1,4),50*1/3^rep(0:3,2))
@@ -30,7 +30,7 @@
 #' write.table(raw,tmpFile,row.names=FALSE,col.names=FALSE,sep=',')
 #' readAnti(tmpFile)
 #' readAnti(raw)
-readAnti<-function(dat,positiveThreshold=25,dilutions=300*3^(0:3),p24Dilutions=240/3^(0:3),vocal=TRUE,nrows=8){
+readAnti<-function(dat,positiveThreshold=25,dilutions=300*3^(0:3),positiveDilutions=240/3^(0:3),vocal=TRUE,nrows=8){
   if(!is.data.frame(dat))dat<-utils::read.csv(dat,header=FALSE,stringsAsFactors=FALSE)
   dat<-dat[dat[,2]!=''&!is.na(dat[,2]),]
   if(nrow(dat)%%nrows!=0)stop('Found ',nrow(dat),' rows. Not evenly divided by nrows=',nrows)
@@ -46,7 +46,7 @@ readAnti<-function(dat,positiveThreshold=25,dilutions=300*3^(0:3),p24Dilutions=2
     names(noAnt)<-dilutions
     out<-data.frame('pat'=pat,'antigen'=rep(ants,12),'dilution'=rep(rep(dilutions,3),each=7),'pos'=FALSE,'neg'=FALSE,'od'=raws,stringsAsFactors=FALSE)
     ns<-c(length(noAnt),length(p24Ab))
-    out<-rbind(out,data.frame('pat'=pat,'antigen'=rep(c('noAntigen','p24Control'),ns),'dilution'=c(dilutions,rep(p24Dilutions,2)),'pos'=rep(c(F,T),ns),'neg'=rep(c(T,F),ns),'od'=c(noAnt,p24Ab),stringsAsFactors=FALSE))
+    out<-rbind(out,data.frame('pat'=pat,'antigen'=rep(c('noAntigen','p24Control'),ns),'dilution'=c(dilutions,rep(positiveDilutions,2)),'pos'=rep(c(F,T),ns),'neg'=rep(c(T,F),ns),'od'=c(noAnt,p24Ab),stringsAsFactors=FALSE))
     out$plate<-ii
     out$noAnt<-noAnt[as.character(out$dilution)]
     out$sub<-out$od-out$noAnt

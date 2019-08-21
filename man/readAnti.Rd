@@ -5,12 +5,20 @@
 \title{Read antibody profiling data}
 \usage{
 readAnti(dat, positiveThreshold = 25, dilutions = 300 * 3^(0:3),
-  p24Dilutions = 240/3^(0:3), vocal = TRUE, nrows = 8)
+  positiveDilutions = 240/3^(0:3), vocal = TRUE, nrows = 8)
 }
 \arguments{
 \item{dat}{a file containing the raw data or a data.frame containing raw data. The function assumes that the first column of the first row of each plate contains the patient ID and the remainder of that plate is empty.}
 
 \item{positiveThreshold}{a single numeric threshold to use for determining a threshold by estimating the OD for this amount of positive control antibody}
+
+\item{dilutions}{a vector giving dilutions for the serum sample as fold dilution e.g. 2 ul added to 298 ul would be 150.}
+
+\item{positiveDilutions}{a vector giving dilutions for the positive control as fold dilution e.g. 2 ul added to 298 ul would be 150.}
+
+\item{vocal}{If TRUE output informational messages}
+
+\item{nrows}{number of rows in each group of data/plate}
 }
 \value{
 a data.frame with a row for each well in the raw plate data with columns:
@@ -37,7 +45,4 @@ tmpFile<-tempfile()
 write.table(raw,tmpFile,row.names=FALSE,col.names=FALSE,sep=',')
 readAnti(tmpFile)
 readAnti(raw)
-}
-\seealso{
-\code{\link{calcP24Cut}}, \code{\link{calcCross}}, \code{\link{plotAnti}}
 }
