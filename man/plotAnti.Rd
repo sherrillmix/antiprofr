@@ -18,7 +18,8 @@ plotAnti(stacked, positiveThreshold = 25,
 Plot antibody profiling data from 96 well plates using positive and negative controls and replicate serial dilutions of patient plasma.
 }
 \examples{
-1
+anti<-readAnti(antibodyData)
+plotAnti(anti[anti$plate<4,])
 }
 \seealso{
 \code{\link{plotAnti}}

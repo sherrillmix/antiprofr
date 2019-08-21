@@ -90,7 +90,8 @@ calcCross<-function(od,dil,odCut=25){
 #' @export
 #' @seealso \code{\link{plotAnti}}
 #' @examples
-#' 1
+#' anti<-readAnti(antibodyData)
+#' plotAnti(anti[anti$plate<4,])
 plotAnti<-function(stacked,positiveThreshold=25,lab='Dilution(OD450=p24 25pg)'){
   ylim<-range(stacked$od)
   p24<-stacked[stacked$pos,]
